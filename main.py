@@ -3,11 +3,11 @@
 #######################################################
 import time 
 
-
+import system
 
 mach_no = system.tag.read('Path/mach_no')
 
-target = 'pts'
+target = 'dev'
 
 if target == 'dev':
 	PTS_URL='http://devpts.ganor.ofsoptics.com/norcross/pts/rewind/svc/'
@@ -83,8 +83,8 @@ y=""
 
 def log(x):
 			
-	shared.main.y = shared.main.y + (strftime("[%Y.%m.%d   %H:%M:%S]")) + " " +x +"\n"    
-	system.tag.write('displayMsg',shared.main.y)
+	main.y = main.y + (strftime("[%Y.%m.%d   %H:%M:%S]")) + " " +x +"\n"    
+	system.tag.write('displayMsg',main.y)
 	writeToFile(x)
 	return x
 
@@ -124,7 +124,7 @@ def inTolerance(num, toleranceVal,test,mode):
 def logLength():
 	data = 'TU SERIAL = '+ str(system.tag.read('Path/TU/tu_serialID').value)
 	data+= str(system.tag.read('Path/TU/take_len').value)
-	shared.main.log(data)
+	main.log(data)
 	time.sleep(5)
 
 
@@ -152,7 +152,7 @@ def Stop_code():
 			elif system.tag.read('Path/PFBK').value == 1:
 				code = 'PFBK'
 				print 'pfbk'
-				shared.main.log('PFBK occured')
+				main.log('PFBK occured')
 				system.tag.write('Path/instruction', 'PFBK')
 			elif system.tag.read('Path/STCT').value == 1:
 				code= 'STCT'
@@ -166,7 +166,7 @@ def Stop_code():
 				
 			if system.tag.read('Path/TU/take_len').value < 5: #added on 2/25/19 PPC ; OPLN = auto tapingFailure
 				code = 'OPLN'
-				shared.main.log('Auto taping Failure occured')
+				main.log('Auto taping Failure occured')
 			
 			
 			return code
@@ -190,7 +190,7 @@ def Logout():
 def collect_data():
 	while (system.tag.read('Path/mach_running').value == 1) and not (system.tag.read('Path/mach_stopped').value==1):
 		length_run = system.tag.read('Path/TU/take_len').value
-		shared.main.log('RUN LENGTH - ' + str(length_run))	
+		main.log('RUN LENGTH - ' + str(length_run))	
 		time.sleep(7)
 
 
@@ -201,14 +201,14 @@ def ackDancer():
 		system.tag.write('Path/TU/NextTU',0)
 		system.tag.write('Path/TU/Next_TU_LCU',0)
 		system.tag.write('Path/instruction', 'Dancer Fault acknowledged, ready for the Next TU spool')
-		shared.main.log('Dancer Fault acknowledged. Ready for the Next TU spool') 
+		main.log('Dancer Fault acknowledged. Ready for the Next TU spool') 
 		
 def Fiber_Break():
 		
-	shared.main.Stop_code()
-	shared.CompleteTU.CompleteTU()
+	main.Stop_code()
+	CompleteTU.CompleteTU()
 	
-	shared.TUpkg.Send_tupkg()
+	TUpkg.Send_tupkg()
 	system.tag.write('Path/mach_start_after_taping',0)
 
 import threading 

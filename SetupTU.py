@@ -12,7 +12,7 @@ import time
 import math 
 from time import strftime
 import threading 
-
+import main 
 #example:
 #[2018.05.16 20:31:50] ! VBC INET send: http://pts.ganor.ofsoptics.com/norcross/pts/rewind/svc/setupTU/setupTU.svc/process?inString=mach_no=770:oper_id=328:rwr_id=GET_SPOOL_ID:rwr_serial_id=5220070639:sfo_final_color=NONE:;spoolRun=Single
 #[2018.05.16 20:31:51] ! VBC INET got: 770:328:SETUP:TU:RWR865623657:0:PAYSPL:38:TAkSPL:52:TAKLEN:0:CUTLEN:50800:PAYLEN:306902:PROOFTEST:100:CLMODE:NONE:COLOR:OR:TAKTEN:45:TAKPIT:0.5:PAYTEN:70:DIETEN:70:ISELEN:10:MAXSPEED:1500:PLANSEND:SALE:NO:INKTYPE:NONE:TWIST_V:0:TWIST:N:AIRLNTH:0:AIRDNSE:0:SEDGBGN:30.54:SEDGEND:175.56:no:BTLIMIT:15::
@@ -37,7 +37,7 @@ def SetupTU():
  		system.tag.write('Path/TU/previous_completed',0)
 	
  #reset ALL at new spool 
-		shared.TUpkg.Reset()
+		TUpkg.Reset()
 
 		
 	
@@ -77,15 +77,15 @@ def SetupTU():
 		###############################################################
 		#SEND TO PTS
 		try:
-			sendstring1= shared._1_Oper_Logon.SendURL(shared.main.PTS_URL, Setupsvc, postdata)
+			sendstring1= OperLogon.SendURL(main.PTS_URL, Setupsvc, postdata)
 			print sendstring1
-			shared.main.log(sendstring1)
+			main.log(sendstring1)
 			#RESET TU_PLAN_AREA from previous completeTU instruction. Example: if instruction from previous completeTU is "RWRSCRP", reset it as soon as takeup
 						
 		except:
-			shared.main.log(traceback.print_exc('sendstring1'))
+			main.log(traceback.print_exc('sendstring1'))
 			
-			shared.main.log ('SETUP TU Error'+traceback.format_exc())
+			main.log ('SETUP TU Error'+traceback.format_exc())
 	
 		
 		### PARSE RESPONSE
@@ -95,7 +95,7 @@ def SetupTU():
 			time.sleep(1)
 			response1 = system.net.httpGet(sendstring1)
 			print response1
-			shared.main.log(response1)
+			main.log(response1)
 			response1sp = response1.split(':')
 		
 			#"601:JAM:COMP:TU:JRFSF6614A1CLJ:0:RACK:PAYOUT:10:SCRP:0:::NONE:"
@@ -146,7 +146,7 @@ def SetupTU():
 				system.tag.write("Path/meGranted", response1sp[51])
 				          #MUTLIPLE end granted?
 				system.tag.write("Path/instruction", 'TAKEUP SPOOL VALID')  
-				shared.main.log('TAKEUP SPOOL VALID')   
+				main.log('TAKEUP SPOOL VALID')   
 
 				system.tag.write('Path/inEdge',10.0)
 				system.tag.write('Path/TU/tu_spool_accept','true')
@@ -169,7 +169,7 @@ def SetupTU():
 								     #task assigned
 				#start timer here, if tu spool is valid and doesn't run after a set amount of time, notify the operator/coach/engrs
 #				timeinSec = 400
-#				timer = threading.Timer(timeinSec, shared.main.Send_Email('mach_stalled'))
+#				timer = threading.Timer(timeinSec, main.Send_Email('mach_stalled'))
 #				timer.start()
 #				for i in range(1,timeinSec):
 #					i=i+1
@@ -193,7 +193,7 @@ def SetupTU():
 				 
 				
 				system.tag.write('Path/instruction', 'Takeup Spool Rejected. '  + response1sp[6]) 
-				shared.main.log('Takeup Spool is Rejected. ' + response1sp[6])
+				main.log('Takeup Spool is Rejected. ' + response1sp[6])
 
 				#error handling for cannot use regular id, enter rwrscrap #ppc 1.22.19
 
@@ -203,19 +203,19 @@ def SetupTU():
 				system.tag.write('Path/TU/previous_completed','true')#READY TO ACCEPT A NEW SPOOL SIGNAL 
 				time.sleep(1)
 				system.tag.write('Path/TU/tu_spool_reject','false')
-				shared.main.log(response1sp[6])
+				main.log(response1sp[6])
 
 				
 				
 		except:
-			shared.main.log(traceback.format_exc())
+			main.log(traceback.format_exc())
 			
 			#"601:JAM:COMP:TU:JRFSF6614A1CLJ:0:RACK:PAYOUT:10:SCRP:0:::NONE:"
 		
 	
 	else:
 		system.tag.write('Path/instruction','Previous spool has to be completed to continue')
-		shared.main.log('Previous spool has to be completed to continue')	
+		main.log('Previous spool has to be completed to continue')	
 
 
 
@@ -278,7 +278,7 @@ def SetupTU():
 #            '''	
 #	
 def x():
-	timer = threading.Timer(5,shared.SetupTU.timerDone)
+	timer = threading.Timer(5,SetupTU.timerDone)
 	timer.start()
 #	
 #	
