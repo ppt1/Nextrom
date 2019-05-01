@@ -6,12 +6,12 @@ count = 0.0
 
 
 #THIS FUNCTION CALCULATES STAE COUNT 
-#THIS FUNCTION IS CALLED in  shared.TUpkg.Calc_tupkg(parameter)
+#THIS FUNCTION IS CALLED in  TUpkg.Calc_tupkg(parameter)
 
 def stae(param):
-		ref = shared.TUpkg
-		t = shared.main.inTolerance
-		c = shared.main
+		ref = TUpkg
+		t = main.inTolerance
+		c = main
 		#inTolerance parameters
 		num = 90 #90 degrees
 		toleranceVal = 15 #15 degrees tolerance
@@ -25,18 +25,18 @@ def stae(param):
 #	
 	#FOR STAE COUNT  CHECK IF THE DANCER POSITIONS FALL WITHIN THE TOLERANCE VALUE. This is compared against the BAM controllers - changed to degrees
 		if not t(num,toleranceVal,converted_val,mode):
-			shared.TUpkg.count +=1
-		system.tag.write('Path/TU/stae_count' , shared.TUpkg.count)
-		return shared.TUpkg.count
+			TUpkg.count +=1
+		system.tag.write('Path/TU/stae_count' , TUpkg.count)
+		return TUpkg.count
 		
 #CALLED EVERY TIME THERES A TAG CHANGE IN DANCER BEGIN/END MIN/MAX POSITIONS
 
 def Calc_tupkg(param):	
 
 	#short hand INITIALIZE
-	ref = shared.TUpkg
-	t = shared.main.inTolerance
-	c = shared.main
+	ref = TUpkg
+	t = main.inTolerance
+	c = main
 	#inTolerance parameters
 	num = 90 #90 degrees
 	toleranceVal = 15 #15 degrees tolerance
@@ -84,15 +84,15 @@ def Calc_tupkg(param):
 		print ref.end_array
 	print 'begin stdDev'
 			
-#	begin_stdDev = shared.db.stdDev(ref.begin_array)
+#	begin_stdDev = db.stdDev(ref.begin_array)
 #		
-#	begin_avg = shared.db.mean(ref.begin_array)
+#	begin_avg = db.mean(ref.begin_array)
 #	begin_avg = num - begin_avg #subtract from 90 to send to PTS
 #	
-#	end_stdDev = shared.db.stdDev(ref.end_array)
+#	end_stdDev = db.stdDev(ref.end_array)
 #
 #	
-#	end_avg = shared.db.mean(ref.end_array)
+#	end_avg = db.mean(ref.end_array)
 #	end_avg = num - end_avg
 	
 	#subract everything by 90
@@ -121,11 +121,11 @@ def Calc_tupkg(param):
 	
 
 	 
-def Reset():#THIS FUNCTION IS CALLED AT shared.TUpkg.Send_tupkg()
+def Reset():#THIS FUNCTION IS CALLED AT TUpkg.Send_tupkg()
 		
-		shared.TUpkg.end_array = []
-		shared.TUpkg.begin_array = []
-		shared.TUpkg.count = 0
+		TUpkg.end_array = []
+		TUpkg.begin_array = []
+		TUpkg.count = 0
 		system.tag.write('Path/TU/stae_count',0)
 		system.tag.write('Path/TU/tu_ten_info','')
 		system.tag.write('Path/TU/take_len',0)
@@ -137,15 +137,15 @@ def Reset():#THIS FUNCTION IS CALLED AT shared.TUpkg.Send_tupkg()
 		
 		system.tag.write('Path/PITCH','')
 		
-		print shared.TUpkg.begin_array
+		print TUpkg.begin_array
 		
 		
 
 def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/CompleteTU
 
-	t = shared.main.inTolerance
-	c = shared.main
-	ref = shared.TUpkg
+	t = main.inTolerance
+	c = main
+	ref = TUpkg
 	#inTolerance parameters
 	num = 90 #90 degrees
 	toleranceVal = 15 #15 degrees tolerance
@@ -166,15 +166,15 @@ def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/Compl
 	
 	
 	
-	begin_stdDev = shared.db.stdDev(system.tag.read('Path/TU/begin_array').value)
+	begin_stdDev = db.stdDev(system.tag.read('Path/TU/begin_array').value)
 	
-	begin_avg = shared.db.mean(system.tag.read('Path/TU/begin_array').value)
+	begin_avg = db.mean(system.tag.read('Path/TU/begin_array').value)
 	begin_avg = num - begin_avg #subtract from 90 to send to PTS
 	
-	end_stdDev = shared.db.stdDev(system.tag.read('Path/TU/end_array').value)
+	end_stdDev = db.stdDev(system.tag.read('Path/TU/end_array').value)
 	
 	
-	end_avg = shared.db.mean(system.tag.read('Path/TU/end_array').value)
+	end_avg = db.mean(system.tag.read('Path/TU/end_array').value)
 	end_avg = num - end_avg
 	
 	#subract everything by 90
@@ -205,8 +205,8 @@ def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/Compl
 	tu_pkg +=str(round(d5,2))+':' #begin error inner
 	
 	
-	if shared.TUpkg.count > 0: #Last attribute of the string 
-		tu_pkg += str(shared.TUpkg.count-1)+'0'
+	if TUpkg.count > 0: #Last attribute of the string 
+		tu_pkg += str(TUpkg.count-1)+'0'
 	else:
 		tu_pkg += '0.00'
 		
@@ -222,7 +222,7 @@ def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/Compl
 		manual_mode = system.tag.read('Path/manual_mode')				
 		if manual_mode.value == 1:
 			tu_serID = system.tag.read('Path/TU/tu_serID_manual').value
-			shared.main.log('Machine is in manual mode')
+			main.log('Machine is in manual mode')
 		else:
 			tu_serID = system.tag.read('Path/TU/tu_serID_PTS').value	
 			
@@ -237,11 +237,11 @@ def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/Compl
 		
 		
 		time.sleep(1) # delay the PTS messange sending for one minute to avoid server hangup
-		sendstring = shared.main.PTS_URL + svc + postdata
-		shared.main.log(sendstring)
+		sendstring = main.PTS_URL + svc + postdata
+		main.log(sendstring)
 		#RESPONSE GET
 		response = system.net.httpGet(sendstring)
-		shared.main.log(response)
+		main.log(response)
 		responsesp = response.split(":") #example :770:231:COMP:TU:JRFSF3959D2CLJ:0:RACK:PAYOUT:41:SALE:0:::NONE:
 		if responsesp[5] == '0':
 			ref.Reset()
@@ -249,12 +249,12 @@ def Send_tupkg(): #THIS FUNCTION IS CALLED AT THE TAG CHANGE EVENT OF Path/Compl
 		else:
 			system.tag.write('Path/instruction',responsesp[6])
 			
-		shared.main.log('TUpkg data = ' + tu_pkg)
+		main.log('TUpkg data = ' + tu_pkg)
 		ref.tu_pkg = tu_pkg
 		
 		
 	except:
-		shared.main.log('Tupkg exception: ' + traceback.format_exc())
+		main.log('Tupkg exception: ' + traceback.format_exc())
 		#RECEIVE
 	
 
