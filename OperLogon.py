@@ -1,4 +1,4 @@
-import system 
+print 'hello'
 import time
 import math
 #operator login function, that passes the PTS Url and service. Maybe change later 
@@ -15,7 +15,6 @@ def SendURL(URL,svc,data):
 	send_data = URL + svc + data
 	
 	return send_data
-
 
 
 #Oper Logon send event 
@@ -46,12 +45,12 @@ def Logon():
 	postData += 'oper_id=' + str(oper_id.value.upper()) + ';'
 	if system.tag.read("Path/bTrue4").value == True:
 		if len(system.tag.read("Path/layout_id").value) == 3:
-			postData += 'oper_passwd=' + str(oper_pw.value.upper())
+			postData += 'oper_passwd=' + str(oper_pw.value).upper()
 		else:
 			postData += 'oper_passwd=' + oper_pw	
 	else:
 		if len(system.tag.read("Path/oper_id").value) == 3:
-			postData += 'oper_passwd=' + str(oper_pw.value.upper())
+			postData += 'oper_passwd=' + str(oper_pw.value).upper()
 		else:
 			postData += 'oper_passwd=' + oper_pw
 	sendstring1 = SendURL(shared.main.PTS_URL,svc,postData)#PTS_URL + svc + postData #sendstring1 is directive=oper_logon
@@ -60,6 +59,7 @@ def Logon():
 	
 	try:#send string to get a response
 		
+		response1 = system.net.httpGet(sendstring1)
 		response1 = system.net.httpGet(sendstring1)
 		print response1
 		shared.main.log(response1)
@@ -168,90 +168,7 @@ def Logon():
 	except: 
 		shared.main.log ('Operator Login Error'+traceback.format_exc())
 
-	
-	    #
-#	mach_no = stateRessp[0]        # 
-#	oper_id = stateRessp[1]        # 
-#	RWD = stateRessp[2]        # 
-#	AUX = stateRessp[3]        # 
-#	state = stateRessp[4]        # 
-#	valid  = stateRessp[5]        # 
-#	oper_name = stateRessp[6]        # 
-#	po_fiberID = stateRessp[7]        # 
-#	po_serID = stateRessp[8]        # 
-#	tu_fiberID = stateRessp[9]        # 
-#	tu_serID = stateRessp[10]        # 
-#	PayoutLenSofar = stateRessp[11]        # 
-#	DieID = stateRessp[12]        # 
-#	RefStatus = stateRessp[13]        #Reference Status  
-#	CalStatus = stateRessp[14]        #Calibration Status 
-#	OpMode = stateRessp[15]        #ONLINE or OFFLINE 
-#	DataCollection = stateRessp[16]        #ON or OFF 
-#	inkLevel = stateRessp[17]        #meters of fiber that can be colored 
-#	maxInkLevel = stateRessp[18]        # 
-#	po_sendarea = stateRessp[19]        # 
-#	Current_color = stateRessp[20]        # 
-#	FIBCOLOR = stateRessp[21]        #key 
-#	fiber_color = stateRessp[22]        #value 
-#	current_operid = stateRessp[23]        #value  
-#	PAYSPL = stateRessp[24]        #key 
-#	po_type = stateRessp[25]        #value 
-#	TAKSP = stateRessp[26]        #key 
-#	tu_type = stateRessp[27]        #value 
-#	TAKLEN = stateRessp[28]        #key 
-#	tuLenSet_pts = stateRessp[29]        #Takeup Length set by pts 
-#	CUTLEN = stateRessp[30]        #key 
-#	CutLenSet_pts = stateRessp[31]        #Cut Length set pts 
-#	PAYLEN = stateRessp[32]        #key 
-#	payLenSet = stateRessp[33]        #value 
-#	PROOFTEST = stateRessp[34]        #pROOFtESTsET POINT_PTS KEY …. > 35 "PROOFTEST" ELSE "REWIND" 
-#	Pfsetpoint_pts = stateRessp[35]        # 
-#	CLMODE  = stateRessp[36]        #key color mode
-#	colormode_pts = stateRessp[37]        #value 
-#	TAKTEN = stateRessp[38]        #key 
-#	tu_ten_pts = stateRessp[39]        #value takeup tension set point
-#	TAKEPIT = stateRessp[40]        #KEY 
-#	tu_pit_pts = stateRessp[41]        #VALUE takeup pit set point
-#	PAYTEN = stateRessp[42]        #KEY 
-#	payTen_pts = stateRessp[43]        #VALUE Pay tension setpoint
-#	DIETEN = stateRessp[44]        #KEY 
-#	preDie_pts = stateRessp[45]        #VALUE Pre die set point pts
-#	ISELEN = stateRessp[46]        #KEY 
-#	inLenSet = stateRessp[47]        #value in length set
-#	MAXSPEED = stateRessp[48]        #KEY 
-#	maxLineSpeed = stateRessp[49]        #value max line speed
-#	ORDER = stateRessp[50]        #KEY order mode
-#	ordermode = stateRessp[51]        #value 
-#	inkType = stateRessp[52]        #value gInkType
-#	AIRLNTH = stateRessp[53]        #KEY 
-#	airLen = stateRessp[54]        #value gAirLength
-#	AIRDNSE = stateRessp[55]        #key 
-#	airDense = stateRessp[56]        #value gAirDense
-#	TWIST_V = stateRessp[57]        #key 
-#	twistVal = stateRessp[58]        #value twist value
-#	TWIST = stateRessp[59]        #key 
-#	setTwist = stateRessp[60]        #value gSetTwist
-#	SEDGBGN = stateRessp[61]        #KEY gBeginEdge
-#	edgeBegin = stateRessp[62]        #VALUE 
-#	SEDGEND = stateRessp[63]        #KEY 
-#	edgeEnd = stateRessp[64]        #VALUE gEndEdge
-#	meGranted = stateRessp[65]        #VALUE MUTLIPLE end granted?
-#	TASKASGN = stateRessp[66]        #KEY 
-#	task_asgn = stateRessp[67]        #value task assigned
-#	nextDrawID = stateRessp[68]        #vlaue 
-#	null = stateRessp[69]        # 
-#	#dualspool = stateRessp[70]#VALUE
-#
 
-	
-		
-	
 
-	
-	
-	
-	
-	
-		
-	
-	
+
+
